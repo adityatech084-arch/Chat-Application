@@ -1,9 +1,9 @@
 import app from "./app.js";
-import {configDotenv} from "dotenv"
+import dotenv from "dotenv"
 import dbConnect from "./config/dbconnect.js";
 import http from "http";
 import { initSocket } from "./utils/socket.js";
-configDotenv();
+dotenv.config();
 const server = http.createServer(app);
 initSocket(server);
 
