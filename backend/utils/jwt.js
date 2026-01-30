@@ -21,8 +21,8 @@ export const generateToken = (userId, res) => {
   res.cookie("token", token, {
     maxAge: maxAgeInMs || 24 * 60 * 60 * 1000, // Fallback to 24h if 0
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    secure:false,
   });
 
   return token;
