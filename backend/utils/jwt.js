@@ -22,7 +22,7 @@ export const generateToken = (userId, res) => {
     maxAge: maxAgeInMs || 24 * 60 * 60 * 1000, // Fallback to 24h if 0
     httpOnly: true,
     sameSite: "none",
-    secure:false,
+    secure:true,
   });
 
   return token;
