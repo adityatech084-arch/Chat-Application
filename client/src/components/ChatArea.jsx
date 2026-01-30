@@ -8,6 +8,7 @@ import { getSocket } from '../utils/socket.js';
 import useTypingIndicator from '../hook/useTypingIndicator.jsx';
 import TypingIndicator from './bitsComponents/TypingIndecator.jsx';
 import { LuInfo, LuMenu, LuPhone, LuVideo } from 'react-icons/lu';
+import { toggleSidebar } from '../features/toggle/toggleSlice.js';
 
 const ChatArea = () => {
   const dispatch = useDispatch();
@@ -221,6 +222,7 @@ useEffect(() => {
     minute: "2-digit",
   });
 
+  
 
   return (
     <>
@@ -231,7 +233,7 @@ useEffect(() => {
 <header className="h-18 z-10  top-0 w-full bg-white dark:bg-[#0e0d0d] md:relative flex items-center justify-between px-4 md:px-6 border-b border-slate-200 dark:border-white/10 shrink-0">
   <div className="flex items-center gap-3">
     {/* Sidebar toggle on mobile */}
-    <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 -ml-2 text-slate-600">
+    <button onClick={() => dispatch(toggleSidebar())} className="md:hidden p-2 -ml-2 text-slate-600">
       <LuMenu size={24} />
     </button>
 

@@ -9,16 +9,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessageInfo, incrementUnread, resetUnreadCountLocal, setSelectedUser } from '../features/chat/chatSlice';
 import { getSocket } from '../utils/socket.js';
 import { useEffect } from 'react';
-import { toggleSearchUserModel ,toggleCreateGroupModel } from '../features/toggle/toggleSlice.js';
+import { toggleSearchUserModel ,toggleCreateGroupModel, toggleSidebar } from '../features/toggle/toggleSlice.js';
 import { addGroup, getGroupMessages, getgroups, resetGroupUnread, setSelectedGroup, updateGroupLastMessage } from '../features/group/groupSlice.js';
 import { notfication } from '../utils/notification.js';
 import { formatChatTime } from '../utils/formateChatTime.js';
 import SearchInput from './SearchInput.jsx';
-const LeftSidebar = ({ authUser, isSidebarOpen, setSidebarOpen }) => {
+const LeftSidebar = ({ authUser, setSidebarOpen }) => {
   const dispatch = useDispatch();
   const socket = getSocket();
   const { chats, selectedUser } = useSelector((state) => state.chat);
   const {groups ,selectedGroup} = useSelector((state)=>state.group);
+  const {isSidebarOpen} = useSelector((state)=>state.toggle);
+
 
   // 🔥 SOCKET LOGIC FOR LIVE UNREAD COUNT
 
@@ -173,7 +175,7 @@ socket.on("newMessage", (message) => {
             </div>
             <h1 className="font-semibold dark:text-slate-200 text-gray-900  text-sm">Chatify</h1>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden p-1">
+          <button onClick={() => dispatch(toggleSidebar())} className="md:hidden p-1">
             <LuX size={20} />
           </button>
         </div>
@@ -412,7 +414,7 @@ const isActive = selectedGroup?._id === group._id;
 
         </div>
 
-        <div className="absolute bottom-0 w-full p-4 border-t border-slate-200 dark:border-white/10  flex items-center justify-between">
+        <div className="absolute bottom-0 w-full p-4 border-t bg-white border-slate-200 dark:border-white/10  flex items-center justify-between">
           <LuSettings size={20} className="text-slate-400 cursor-pointer" />
           <div className="flex items-center gap-1 bg-green-100 px-2 py-0.5 rounded-full">
             <div className="size-1.5 bg-green-500 rounded-full"></div>
