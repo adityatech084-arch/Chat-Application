@@ -90,6 +90,7 @@ const initialState = {
   groupmessages: [],   // array of message objects
   selectedGroup: null,
   grouploading: false,
+  groupmsgloading:true,
   error: null,
 };
 
@@ -205,8 +206,13 @@ const groupSlice = createSlice({
       })
 
       /* get group messages */
+        .addCase(getGroupMessages.pending, (state, action) => {
+        state.groupmsgloading = true;
+      })
       .addCase(getGroupMessages.fulfilled, (state, action) => {
         state.groupmessages = action.payload;
+        state.groupmsgloading = false;
+
       });
   },
 });

@@ -6,7 +6,7 @@ import {
   LuBookmark, LuCirclePlus, LuHash, LuSettings, LuX 
 } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessageInfo, incrementUnread, resetUnreadCountLocal, setSelectedUser } from '../features/chat/chatSlice';
+import { addMessageInfo, fetchMessages, incrementUnread, resetUnreadCountLocal, setSelectedUser } from '../features/chat/chatSlice';
 import { getSocket } from '../utils/socket.js';
 import { useEffect } from 'react';
 import { toggleSearchUserModel ,toggleCreateGroupModel, toggleSidebar } from '../features/toggle/toggleSlice.js';
@@ -117,6 +117,7 @@ socket.on("newMessage", (message) => {
     dispatch(setSelectedGroup(null)); // deselect group
 
     dispatch(setSelectedUser(user));
+    dispatch(fetchMessages(user._id));
 
     // Close sidebar on mobile
     if (window.innerWidth < 768) setSidebarOpen(false);

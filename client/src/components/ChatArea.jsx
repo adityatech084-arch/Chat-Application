@@ -16,11 +16,15 @@ const ChatArea = () => {
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
   const { authUser } = useSelector((state) => state.auth);
-  const { selectedUser, messages } = useSelector((state) => state.chat);
-  const { selectedGroup, groupmessages } = useSelector((state) => state.group);
+    
+  const { selectedUser, messages ,chatmsgloading  } = useSelector((state) => state.chat);
+  const { selectedGroup, groupmessages,groupmsgloading } = useSelector((state) => state.group);
   // const [isTyping, setIsTyping] = useState(false);
   const socket = getSocket();
   const isTyping = useTypingIndicator(socket, selectedUser?._id);
+  // const loading = chatmsgloading || groupmsgloading; // ✅ global loading
+  const loading = selectedGroup ? groupmsgloading : chatmsgloading;
+
   // const isTyping = useTypingIndicator(socket, selectedGroup || selectedUser, !!selectedGroup);
   // const isTyping = useTypingIndicator(socket, selectedGroup || selectedUser, !!selectedGroup);
 // const activeChat = selectedGroup || selectedUser;
@@ -307,7 +311,7 @@ useEffect(() => {
           >
         <div className="space-y-4">
           {
-            chatMessages.length ===0 ? (
+            loading || chatMessages.length ===0 ? (
               <>
               <MessagesSkeleton count={5}/>
               </>

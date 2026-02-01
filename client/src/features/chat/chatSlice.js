@@ -97,9 +97,9 @@ const chatSlice = createSlice({
     chats: [], 
     NewChats: [],
     selectedUser: null,
-    messages: [], 
+   messages: [],  
     searchResults: [],
-    
+    chatmsgloading:false,
     chatloading: false,
     loadingSearch: false, // Added missing state
     error: null,
@@ -338,9 +338,15 @@ addMessageInfo: (state, action) => {
         state.chatloading = false;
         // state.chats = [];
       })
+.addCase(fetchMessages.pending, (state, action) => {
+       state.chatmsgloading = true;
+         state.messages = [];
+      })      
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload.messages;
-      })
+       state.chatmsgloading = false;
+
+      }).addCase(fetchMessages.rejected, (state) => { state.chatmsgloading = false; })
      .addCase(sendMessage.fulfilled, (state, action) => {
       // console.log("SEND MESSAGE FULFILLED:", action.payload);
   const msg = action.payload;
