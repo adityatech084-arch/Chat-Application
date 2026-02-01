@@ -9,6 +9,8 @@ import useTypingIndicator from '../hook/useTypingIndicator.jsx';
 import TypingIndicator from './bitsComponents/TypingIndecator.jsx';
 import { LuInfo, LuMenu, LuPhone, LuVideo } from 'react-icons/lu';
 import { toggleSidebar } from '../features/toggle/toggleSlice.js';
+import IncomingMessageSkeleton from './bitsComponents/IncommingMessageSkeleton.jsx';
+import MessagesSkeleton from './bitsComponents/IncommingMessageSkeleton.jsx';
 
 const ChatArea = () => {
   const dispatch = useDispatch();
@@ -304,7 +306,13 @@ useEffect(() => {
             style={{ backgroundImage: "url('')" }}
           >
         <div className="space-y-4">
-          {chatMessages?.map((msg, idx) => {
+          {
+            chatMessages.length ===0 ? (
+              <>
+              <MessagesSkeleton count={5}/>
+              </>
+            ) : (
+ chatMessages?.map((msg, idx) => {
             const isSender = msg.sender?._id === authUser._id || msg.sender === authUser._id;
 
             return (
@@ -349,7 +357,10 @@ useEffect(() => {
                 </div>
               </div>
             );
-          })}
+          })
+            )
+          }
+         
 
           {/* Typing indicator */}
           {/* {isTyping && activeChat && (

@@ -42,7 +42,7 @@
 // App.jsx
 import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -53,13 +53,19 @@ import ChatPage from "./pages/ChatPage";
 
 import { checkAuth } from "./features/auth/authSlice";
 import { AuthProtector, PublicProtector } from "./protector/Protect";
-
+import PreLoader from "./components/PreLoader";
 function App() {
+  const {isCheckingAuth} = useSelector(state=>state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
+
+if(isCheckingAuth){
+  return <PreLoader/>
+}
+
 
   return (
     <>

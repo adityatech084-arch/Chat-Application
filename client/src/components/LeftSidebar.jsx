@@ -14,13 +14,14 @@ import { addGroup, getGroupMessages, getgroups, resetGroupUnread, setSelectedGro
 import { notfication } from '../utils/notification.js';
 import { formatChatTime } from '../utils/formateChatTime.js';
 import SearchInput from './SearchInput.jsx';
+import ChatItemSkeleton from './bitsComponents/ChatSkeleton.jsx';
 const LeftSidebar = ({ authUser, setSidebarOpen }) => {
   const dispatch = useDispatch();
   const socket = getSocket();
   const { chats, selectedUser } = useSelector((state) => state.chat);
-  const {groups ,selectedGroup} = useSelector((state)=>state.group);
+  const {groups ,selectedGroup ,grouploading} = useSelector((state)=>state.group);
   const {isSidebarOpen} = useSelector((state)=>state.toggle);
-
+   const {chatloading}=useSelector(state=>state.chat)
 
   // 🔥 SOCKET LOGIC FOR LIVE UNREAD COUNT
 
@@ -193,7 +194,12 @@ socket.on("newMessage", (message) => {
               <LuCirclePlus size={20} className="cursor-pointer" onClick={() => dispatch(toggleSearchUserModel())} />
             </div>
             <div className="px-3 space-y-0.5">
-              {chats && chats.map((chat) => {
+               
+               {
+                chatloading ? (
+                  <ChatItemSkeleton/>
+                ) :(
+  chats && chats.map((chat) => {
                 // console.log(chat)
                 const isActive = selectedUser?._id === chat.user._id;
                 return (
@@ -269,7 +275,14 @@ socket.on("newMessage", (message) => {
 
 
                 );
-              })}
+              })
+                )
+
+               }
+
+
+
+            
             </div>
           </div>
         
@@ -294,106 +307,60 @@ socket.on("newMessage", (message) => {
 
       {/* Groups list */}
      {/* Groups list */}
+{/* */}
 <div className="px-3 space-y-0.5">
-  {groups && groups.length > 0 ? (
+  {grouploading ? (
+    // Show skeletons while groups are loading
+    <>
+   <ChatItemSkeleton length={2}/>
+    </>
+  ) : groups && groups.length > 0 ? (
     groups.map((group) => {
-  //   const isActive =
-  // selectedGroup?.groupId === group.groupId && !selectedUser;
-
-const isActive = selectedGroup?._id === group._id;
-
-
-
-
+      const isActive = selectedGroup?._id === group._id;
       return (
-        // <div
-        //   key={group.groupId}
-        //   onClick={() => handleGroupClick(group)}
-        //   className={`flex justify-between items-center gap-3 px-3 py-3 rounded-lg cursor-pointer text-sm transition-colors ${
-        //     isActive ? "bg-indigo-50 text-indigo-700 font-bold" : "hover:bg-slate-100 text-slate-600"
-        //   }`}
-        // >
-        //   {/* Group Name */}
-        //   <div className="flex items-center gap-2 truncate">
-        //     <span className={isActive ? "text-indigo-600" : "text-slate-400"}>#</span>
-        //     <span className="truncate">{group.name}</span>
-        //   </div>
+        <div
+          key={group._id}
+          onClick={() => handleGroupClick(group)}
+          className={`flex items-center gap-3 p-3.5 rounded-lg cursor-pointer transition-colors
+            ${
+              isActive
+                ? "bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-white"
+                : "bg-white dark:bg-[#0e0d0d] hover:bg-green-900/10 dark:hover:bg-[#343434] text-slate-600 dark:text-white"
+            }`}
+        >
+          {/* Avatar */}
+          <img
+            src={
+              group.profilePic ||
+              `https://api.dicebear.com/7.x/avataaars/svg?seed=${group._id}`
+            }
+            alt={group.name}
+            className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"
+          />
 
-        //   {/* Unread Count */}
-        //   {group.unreadCount > 0 && (
-        //     <div className="bg-green-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-        //       {group.unreadCount}
-        //     </div>
-        //   )}
-        // </div>
-         <div
-      key={group._id}
-      onClick={() => handleGroupClick(group)}
-      className={`
-        flex items-center gap-3 p-3.5 rounded-lg cursor-pointer transition-colors
-        ${
-      isActive
-        ? "bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-white"
-        : "bg-white dark:bg-[#0e0d0d] hover:bg-green-900/10 dark:hover:bg-[#343434] text-slate-600 dark:text-white"
-    }`}
-    >
-      {/* Avatar / Group Icon */}
-      
-        <img
-          src={
-            group.profilePic ||
-            `https://api.dicebear.com/7.x/avataaars/svg?seed=${group._id}`
-          }
-          alt={""}
-          className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"
-        />
-    
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center font-spaceGrotesk text-lg font-medium">
-          <span className="truncate">
-            {group.name}
-          </span>
-
-          {/* Time for user chat */}
-          {group && group.lastMessageAt && (
-            <span className="text-xs text-green-400 ml-2 whitespace-nowrap">
-              {formatChatTime(group.lastMessageAt)}
-            </span>
-          )}
-        </div>
-
-        {/* Last message / unread */}
-        {/* <div className="flex justify-between items-center mt-0.5">
-        
-            <p className="text-xs text-black dark:text-white truncate">
-              {group.lastMessage.text || group.lastMessage || "Start chatting"}
-            </p>
-          
-
-         {group.unreadCount > 0 && (
-            <div className="bg-green-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-              {group.unreadCount}
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-center font-spaceGrotesk text-lg font-medium">
+              <span className="truncate">{group.name}</span>
+              {group.lastMessageAt && (
+                <span className="text-xs text-green-400 ml-2 whitespace-nowrap">
+                  {formatChatTime(group.lastMessageAt)}
+                </span>
+              )}
             </div>
-          )}
-        </div> */}
-            <div className="flex justify-between items-center mt-0.5">
-      {/* Last message */}
-      <p className="text-xs text-black  dark:text-white truncate">
-              {group.lastMessage.text || group.lastMessage || "Start chatting"}
-        
-      </p>
 
-      {/* Unread badge */}
-      {group.unreadCount > 0 && (
-        <span className="ml-2 bg-green-500 text-white dark:text-black rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center text-xs font-semibold">
-          {group.unreadCount}
-        </span>
-      )}
-    </div>
-      </div>
-    </div>
+            <div className="flex justify-between items-center mt-0.5">
+              <p className="text-xs text-black dark:text-white truncate">
+                {group.lastMessage?.text || group.lastMessage || "Start chatting"}
+              </p>
+              {group.unreadCount > 0 && (
+                <span className="ml-2 bg-green-500 text-white dark:text-black rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center text-xs font-semibold">
+                  {group.unreadCount}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       );
     })
   ) : (

@@ -99,7 +99,8 @@ const chatSlice = createSlice({
     selectedUser: null,
     messages: [], 
     searchResults: [],
-    loading: false,
+    
+    chatloading: false,
     loadingSearch: false, // Added missing state
     error: null,
   },
@@ -326,8 +327,16 @@ addMessageInfo: (state, action) => {
   },
   extraReducers: builder => {
     builder
+    .addCase(fetchChats.pending,(state,action)=>{
+      state.chatloading = true;
+    })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.chats = action.payload;
+        state.chatloading = false;
+
+      }).addCase(fetchChats.rejected, (state, action) => {
+        state.chatloading = false;
+        // state.chats = [];
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.messages = action.payload.messages;

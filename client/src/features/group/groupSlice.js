@@ -89,7 +89,7 @@ const initialState = {
   groups: [],
   groupmessages: [],   // array of message objects
   selectedGroup: null,
-  loading: false,
+  grouploading: false,
   error: null,
 };
 
@@ -192,15 +192,15 @@ const groupSlice = createSlice({
     builder
       /* get groups */
       .addCase(getgroups.pending, (state) => {
-        state.loading = true;
+        state.grouploading = true;
         state.error = null;
       })
       .addCase(getgroups.fulfilled, (state, action) => {
-        state.loading = false;
+        state.grouploading = false;
         state.groups = action.payload;
       })
       .addCase(getgroups.rejected, (state, action) => {
-        state.loading = false;
+        state.grouploading = false;
         state.error = action.payload;
       })
 
