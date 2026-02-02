@@ -407,7 +407,7 @@ import React, { useEffect, useRef } from 'react';
 import { HiUserGroup } from "react-icons/hi2";
 import { LuRocket, LuPlus, LuMessageSquare, LuAtSign, LuBookmark, LuCirclePlus, LuHash, LuSettings, LuX } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessageInfo, fetchMessages, setSelectedUser, resetUnreadCountLocal, setMessages } from '../features/chat/chatSlice.js';
+import { addMessageInfo, fetchMessages, setSelectedUser, resetUnreadCountLocal, setMessages, setChatmsgLoading } from '../features/chat/chatSlice.js';
 import { getSocket } from '../utils/socket.js';
 import { toggleSearchUserModel, toggleCreateGroupModel, toggleSidebar } from '../features/toggle/toggleSlice.js';
 import { addGroup, getGroupMessages, getgroups, resetGroupUnread, setSelectedGroup, updateGroupLastMessage } from '../features/group/groupSlice';
@@ -507,11 +507,11 @@ const handleUserClick = async (user) => {
 
   dispatch(setSelectedUser(user));
   dispatch(setSelectedGroup(null));
-
+  dispatch(setChatmsgLoading(true)); 
   try {
     const messages = await dispatch(
       fetchMessages({ userId: user._id, signal: controller.signal }) // ✅ pass object
-    ).unwrap();
+    ).unwrap() .finally(() => dispatch(setChatmsgLoading(false)));
 
     // only set if still selected
     if (selectedUser?._id === user._id) {

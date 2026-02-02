@@ -580,6 +580,9 @@ const chatSlice = createSlice({
     resetSearchResults: (state) => {
       state.searchResults = [];
     },
+    setChatmsgLoading: (state, action) => {
+      state.chatmsgloading = action.payload;
+    },
 
     // Add a message manually
     addMessage: (state, action) => {
@@ -636,6 +639,7 @@ export const {
   addMessage,
   setMessages,
   setChat,
+  setChatmsgLoading
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
