@@ -505,23 +505,35 @@ const handleUserClick = async (user) => {
   const controller = new AbortController();
   fetchController.current = controller;
 
+  // 1️⃣ Set the selected user
   dispatch(setSelectedUser(user));
+
+  // 2️⃣ Deselect group
   dispatch(setSelectedGroup(null));
-  dispatch(setChatmsgLoading(true)); 
+
+  // 3️⃣ Clear old messages for loading state
+  dispatch(setMessages([]));
+
+  // 4️⃣ Show loader
+  dispatch(setChatmsgLoading(true));
+
   try {
     const messages = await dispatch(
-      fetchMessages({ userId: user._id, signal: controller.signal }) // ✅ pass object
-    ).unwrap() .finally(() => dispatch(setChatmsgLoading(false)));
+      fetchMessages({ userId: user._id, signal: controller.signal })
+    ).unwrap();
 
-    // only set if still selected
+    // Only update if still selected
     if (selectedUser?._id === user._id) {
       dispatch(setMessages(messages));
     }
   } catch (err) {
     if (err.name === "AbortError") console.log("Fetch aborted for", user._id);
     else console.error("Failed to fetch messages:", err);
+  } finally {
+    dispatch(setChatmsgLoading(false));
   }
 };
+
 
   // const handleUserClick = async (user) => {
   //   // Immediately set selected user
