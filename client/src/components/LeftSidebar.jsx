@@ -403,11 +403,11 @@
 // export default LeftSidebar;
 
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { HiUserGroup } from "react-icons/hi2";
 import { LuRocket, LuPlus, LuMessageSquare, LuAtSign, LuBookmark, LuCirclePlus, LuHash, LuSettings, LuX } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
-import { addMessageInfo, fetchMessages, setSelectedUser, resetUnreadCountLocal } from '../features/chat/chatSlice.js';
+import { addMessageInfo, fetchMessages, setSelectedUser, resetUnreadCountLocal, setMessages } from '../features/chat/chatSlice.js';
 import { getSocket } from '../utils/socket.js';
 import { toggleSearchUserModel, toggleCreateGroupModel, toggleSidebar } from '../features/toggle/toggleSlice.js';
 import { addGroup, getGroupMessages, getgroups, resetGroupUnread, setSelectedGroup, updateGroupLastMessage } from '../features/group/groupSlice';
@@ -486,16 +486,59 @@ const LeftSidebar = ({ authUser, setSidebarOpen }) => {
 
   /* ================= HANDLERS ================= */
 
-  const handleUserClick = (user) => {
-    socket.emit("mark-as-read", { senderId: user._id });
-     if (selectedUser?._id === user._id) return;
-    dispatch(setSelectedGroup(null));
-    dispatch(setSelectedUser(user));
-    dispatch(fetchMessages(user._id));
+  // const handleUserClick = (user) => {
+  //   socket.emit("mark-as-read", { senderId: user._id });
+  //    if (selectedUser?._id === user._id) return;
+  //   dispatch(setSelectedGroup(null));
+  //   dispatch(setSelectedUser(user));
+  //   dispatch(fetchMessages(user._id));
 
-    if (window.innerWidth < 768) setSidebarOpen(false);
-  };
+  //   if (window.innerWidth < 768) setSidebarOpen(false);
+  // };
+  const fetchController = useRef(null);
+const handleUserClick = async (user) => {
+  if (!user?._id) return; // prevent undefined
+  if (selectedUser?._id === user._id) return;
 
+  // Abort previous fetch if exists
+  if (fetchController.current) fetchController.current.abort();
+  const controller = new AbortController();
+  fetchController.current = controller;
+
+  dispatch(setSelectedUser(user));
+  dispatch(setSelectedGroup(null));
+
+  try {
+    const messages = await dispatch(
+      fetchMessages({ userId: user._id, signal: controller.signal }) // ✅ pass object
+    ).unwrap();
+
+    // only set if still selected
+    if (selectedUser?._id === user._id) {
+      dispatch(setMessages(messages));
+    }
+  } catch (err) {
+    if (err.name === "AbortError") console.log("Fetch aborted for", user._id);
+    else console.error("Failed to fetch messages:", err);
+  }
+};
+
+  // const handleUserClick = async (user) => {
+  //   // Immediately set selected user
+  //   dispatch(setSelectedUser(user));
+
+  //   try {
+  //     // Dispatch thunk and unwrap promise
+  //     const messages = await dispatch(fetchMessages(user._id)).unwrap();
+
+  //     // Only update messages if clicked user is still selected
+  //     if (selectedUser?._id === user._id) {
+  //       dispatch(setMessages(messages));
+  //     }
+  //   } catch (err) {
+  //     console.error("Failed to fetch messages:", err);
+  //   }
+  // };
   // const handleGroupClick = (group) => {
   //   socket.emit("mark-group-read", { groupId: group._id });
   //   dispatch(setSelectedGroup(group));

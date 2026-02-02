@@ -417,18 +417,35 @@ export const fetchChats = createAsyncThunk(
 );
 
 // Fetch messages
+// export const fetchMessages = createAsyncThunk(
+//   "chat/fetchMessages",
+//   async (userId, { rejectWithValue }) => {
+//     try {
+//       const res = await axiosInstance.get(`/message/${userId}`);
+//       return { userId, messages: res.data };
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || err.message);
+//     }
+//   }
+// );
+
+
+// -------------------- THUNKS --------------------
 export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
-  async (userId, { rejectWithValue }) => {
+  async ({ userId, signal }, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(`/message/${userId}`);
-      return { userId, messages: res.data };
+      // console.log(userId)
+      const res = await axiosInstance.get(`/message/${userId.toString()}`);
+     return { userId, messages: res.data };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || err.message);
+      if (err.name === "CanceledError" || err.name === "AbortError") {
+        throw err; // Allow abort to be caught in component
+      }
+      return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
-
 // Send message
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
@@ -487,6 +504,9 @@ const chatSlice = createSlice({
     error: null,
   },
   reducers: {
+     setMessages: (state, action) => {
+      state.messages = action.payload; // <-- this updates messages in Redux
+    },
         setChat: (state, action) => {
       const chat = action.payload;
       const exists = state.chats.find(
@@ -577,16 +597,20 @@ const chatSlice = createSlice({
       })
       .addCase(fetchChats.rejected, (state) => { state.chatloading = false; })
 
-      .addCase(fetchMessages.pending, (state) => {
+       .addCase(fetchMessages.pending, (state) => {
         state.chatmsgloading = true;
-        state.messages = [];
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
-        state.messages = action.payload.messages;
+        const { userId, messages } = action.payload;
+        // Only update if still selected
+        if (state.selectedUser?._id === userId) {
+          state.messages = messages;
+        }
         state.chatmsgloading = false;
       })
-      .addCase(fetchMessages.rejected, (state) => { state.chatmsgloading = false; })
-
+      .addCase(fetchMessages.rejected, (state) => {
+        state.chatmsgloading = false;
+      })
       .addCase(sendMessage.fulfilled, (state, action) => {
         const msg = action.payload;
         state.messages.push(msg.data);
@@ -610,6 +634,7 @@ export const {
   incrementUnread,
   resetSearchResults,
   addMessage,
+  setMessages,
   setChat,
 } = chatSlice.actions;
 

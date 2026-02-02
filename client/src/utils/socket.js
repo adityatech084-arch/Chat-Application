@@ -6,8 +6,8 @@ export const connectSocket = () => {
   if (socket) return socket;
 
   socket = io(import.meta.env.VITE_BACKEND_URL, {
-    withCredentials: true,       // ✅ send HttpOnly cookie
     transports: ["websocket"],   // websocket only
+    withCredentials: true,       // ✅ send HttpOnly cookie
   });
 
   socket.on("con", () => {
