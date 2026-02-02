@@ -496,14 +496,27 @@ const LeftSidebar = ({ authUser, setSidebarOpen }) => {
     if (window.innerWidth < 768) setSidebarOpen(false);
   };
 
+  // const handleGroupClick = (group) => {
+  //   socket.emit("mark-group-read", { groupId: group._id });
+  //   dispatch(setSelectedGroup(group));
+  //   dispatch(setSelectedUser(null));
+  //     if (selectedGroup?._id === group._id) return;
+  //   dispatch(getGroupMessages(group._id));
+  //   dispatch(resetGroupUnread(group._id));
+  // };
+
+
   const handleGroupClick = (group) => {
-    socket.emit("mark-group-read", { groupId: group._id });
-    dispatch(setSelectedGroup(group));
-    dispatch(setSelectedUser(null));
-      if (selectedGroup?._id === group._id) return;
-    dispatch(getGroupMessages(group._id));
-    dispatch(resetGroupUnread(group._id));
-  };
+  if (selectedGroup?._id === group._id) return; // <-- prevent refetch if already selected
+
+  dispatch(setSelectedGroup(group));
+  dispatch(setSelectedUser(null));
+
+  dispatch(getGroupMessages(group._id));
+  dispatch(resetGroupUnread(group._id));
+
+  socket.emit("mark-group-read", { groupId: group._id });
+};
 
   /* ================= INITIAL DATA ================= */
   useEffect(() => {
