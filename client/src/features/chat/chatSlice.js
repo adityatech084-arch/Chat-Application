@@ -457,6 +457,7 @@ export const sendMessage = createAsyncThunk(
       if (media?.length) media.forEach((file) => formData.append("media", file));
 
       const res = await axiosInstance.post("/message/send-message", formData);
+      if (chat.messages.find(m => m._id === localId)) return null;
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -585,11 +586,11 @@ const chatSlice = createSlice({
     },
 
     // Add a message manually
-    addMessage: (state, action) => {
-      const msg = action.payload;
-      const exists = state.messages.find((m) => m._id === msg._id);
-      if (!exists) state.messages.push(msg);
-    },
+addMessage: (state, action) => {
+  const msg = action.payload;
+  const exists = state.messages.find((m) => m._id === msg._id || m._id === msg.localId);
+  if (!exists) state.messages.push(msg);
+},
   },
   extraReducers: (builder) => {
     builder

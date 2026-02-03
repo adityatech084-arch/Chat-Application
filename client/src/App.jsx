@@ -54,12 +54,30 @@ import ChatPage from "./pages/ChatPage";
 import { checkAuth } from "./features/auth/authSlice";
 import { AuthProtector, PublicProtector } from "./protector/Protect";
 import PreLoader from "./components/PreLoader";
+import useOnlineStatus from "./hook/useOnlineStatus";
+import { saveOfflineMessage, sendOfflineMessages } from "./utils/offlineMessages";
+import { getSocket } from "./utils/socket";
 function App() {
-  const {isCheckingAuth} = useSelector(state=>state.auth);
+  const {isCheckingAuth ,authUser} = useSelector(state=>state.auth);
   const dispatch = useDispatch();
+const isOnline = useOnlineStatus();
+const socket = getSocket();
+   
+  useEffect(() => {
+    if (isOnline && authUser) {
+      // Send any stored offline messages
+      sendOfflineMessages(authUser,socket ,dispatch);
+    }
+  }, [isOnline, authUser, dispatch]); // always same length, safe
+
 
   useEffect(() => {
-    dispatch(checkAuth());
+//  isOnline && sendOfflineMessages(authUser ,socket,dispatch) 
+
+  
+  dispatch(checkAuth());
+  // return () => window.removeEventListener("online", onlineHandler);
+    //  return () => window.removeEventListener("online", handleOnline);
   }, [dispatch]);
 
 if(isCheckingAuth){

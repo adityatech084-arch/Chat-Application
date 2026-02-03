@@ -387,12 +387,17 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { LuBold, LuCirclePlus, LuCode, LuItalic, LuLink, LuList, LuSend } from "react-icons/lu";
 import EmojiPicker from "emoji-picker-react";
 import { useDispatch, useSelector } from "react-redux";
-import { sendMessage } from "../features/chat/chatSlice";
+import { addMessage, sendMessage } from "../features/chat/chatSlice";
 import { addGroupMessage } from "../features/group/groupSlice";
 import { getSocket } from "../utils/socket.js";
+import { saveOfflineMessage } from "../utils/offlineMessages.js";
+import useOnlineStatus from "../hook/useOnlineStatus.jsx";
 
 function MessageInput({ isGroup = false, chatId }) {
   const dispatch = useDispatch();
+  const {selectedUser}=useSelector(state=>state.chat)
+  const {selectedGroup}=useSelector(state=>state.group)
+
   const { authUser } = useSelector((state) => state.auth);
   const socket = getSocket();
   // console.log(isGroup)
@@ -408,56 +413,58 @@ function MessageInput({ isGroup = false, chatId }) {
   const emojiBtnRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 const isTypingRef = useRef(false);
-
+const isOnline = useOnlineStatus();
 
   const handleSend = () => {
     if (!text.trim() && files.length === 0) return;
     if (!chatId) return;
+  const tempId = Date.now().toString();
+  const newMessage = {
+    _id: tempId,
+    receiverId:chatId,
+    sender: {
+      _id: authUser._id,
+      fullName: authUser.fullName,
+      profilePic: authUser.profilePic,
+    },
+    text,
+    attachments: files || [],
+    readBy: [],
+    isDeleted: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: navigator.onLine ? "sent" : "sending", // ✅ online = sent, offline = sending
+  };
 
-    // 🔹 GROUP MESSAGE
-    if (isGroup) {
-      console.log("sending")
-      socket.emit("send-group-message", {
-        groupId: chatId,
-        senderId: authUser._id, // MUST send senderId
-        text,
-        media: files,
-      });
-
-      // Optimistically add message locally if group is open
-     
-// dispatch(addGroupMessage({
-//   groupId: chatId,
-//   message: {
-//     _id: Date.now().toString(), // temporary id
-//     sender: { _id: authUser._id, fullName: authUser.fullName, profilePic: authUser.profilePic },
-//     text,
-//     attachments: files || [],
-//     readBy: [],
-//     isDeleted: false,
-//     createdAt: new Date().toISOString(),
-//     updatedAt: new Date().toISOString(),
-//   },
-// }));
-
-
-    } 
-    // 🔹 1:1 MESSAGE
-    else {
-      socket.emit("sendMessage", {
-        receiverId: chatId,
-        text,
-        media: files,
-      });
-
-      dispatch(
-        sendMessage({
+     if (isOnline) {
+      // Online: send to socket + add to redux
+      if (isGroup) {
+        socket.emit("send-group-message", {
+          groupId: chatId,
+          senderId: authUser._id,
+          text,
+          media: files,
+          localId: newMessage._id,
+        });
+        dispatch(addGroupMessage({ groupId: chatId, message: newMessage }));
+      } else {
+        socket.emit("sendMessage", {
           receiverId: chatId,
           text,
           media: files,
-        })
-      );
+          localId: newMessage._id,
+        });
+        dispatch(addMessage(newMessage));
+      dispatch( sendMessage({ receiverId: chatId, text, media: files, }) );
+      }
+    } else {
+      // Offline: only save locally
+      if (isGroup) dispatch(addGroupMessage({ groupId: chatId, message: newMessage }));
+      else dispatch(addMessage({ receiverId: chatId, message: newMessage }));
+
+      saveOfflineMessage(newMessage);
     }
+
 
     setText("");
     setFiles([]);

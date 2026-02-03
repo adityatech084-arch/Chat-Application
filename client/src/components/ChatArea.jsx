@@ -340,7 +340,7 @@ useEffect(() => {
                       )}
                       
                  <div className="flex flex-col">
-  <span className="text-[13px]">{msg.text}</span>
+  <span className="text-[13px]">{msg.text || msg.message?.text}</span>
   <div className={`flex mt-0.2 text-[10px] font-medium text-white`}>
     {isSender ? (
       // Sent message: time on left
@@ -349,6 +349,13 @@ useEffect(() => {
       // Received message: time on right
       <span className="ml-auto text-[9px] text-slate-600">{formatTime(msg.createdAt || new Date())}</span>
     )}
+      {isSender && (
+              <span className="ml-1 text-[10px]">
+                {msg.status === "sending" && "⏳ Sending"}
+                {msg.status === "sent" && "✓✓"}
+              </span>
+      )
+ }
   </div>
 </div>
 
