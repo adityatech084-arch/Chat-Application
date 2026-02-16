@@ -10,7 +10,7 @@ export default function EmptyProjects() {
 const dispatch = useDispatch();
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center text-center">
+    <div className="flex  h-full w-full flex-col items-center justify-center text-center">
       
       {/* Lottie Animation */}
       <div className="w-56 sm:w-64 md:w-73 dark:bg-slate-950">

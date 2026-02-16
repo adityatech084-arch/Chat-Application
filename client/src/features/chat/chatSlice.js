@@ -435,9 +435,11 @@ export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ userId, signal }, { rejectWithValue }) => {
     try {
-      // console.log(userId)
+      console.log(userId)
       const res = await axiosInstance.get(`/message/${userId.toString()}`);
+      console.log(res.data)
      return { userId, messages: res.data };
+
     } catch (err) {
       if (err.name === "CanceledError" || err.name === "AbortError") {
         throw err; // Allow abort to be caught in component
@@ -518,7 +520,9 @@ const chatSlice = createSlice({
       state.selectedUser = chat.user;
     },
     setSelectedUser: (state, action) => {
-      state.selectedUser = action.payload;
+ state.selectedUser = action.payload;
+  state.messages = []; // Clear old messages immediately
+  state.chatmsgloading = true; // Start loader immediately
     },
 
     // Increment unread count for a chat

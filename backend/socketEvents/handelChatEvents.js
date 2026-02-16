@@ -31,6 +31,7 @@ export const handleChatEvents = async(socket, io) => {
 
 
   socket.on("sendMessage", async (data) => {
+    console.log(data)
   const { receiverId, text, image } = data;
 
   // Fetch sender and receiver from DB to check block status

@@ -42,9 +42,10 @@ useEffect(() => {
 
   // If a user is selected (1:1 chat)
   if (selectedUser?._id) {
-    dispatch(fetchMessages(selectedUser._id)).then(() => {
+    console.log("iam chage iam running",selectedUser)
+    dispatch(fetchMessages({ userId: selectedUser._id })).then(() => {
       // ✅ Reset unread count locally
-      // dispatch(resetUnreadCountLocal(selectedUser._id));
+      dispatch(resetUnreadCountLocal(selectedUser._id));
 
       socket.emit("mark-as-read", { senderId: selectedUser?._id });
     });
@@ -53,7 +54,7 @@ useEffect(() => {
   // If a group is selected
   if (selectedGroup?._id) {
     dispatch(getGroupMessages(selectedGroup._id)).then(() => {
-      // dispatch(resetGroupUnread(selectedGroup._id));
+      dispatch(resetGroupUnread(selectedGroup._id));
       socket.emit("mark-group-read", { groupId: selectedGroup._id });
     });
   }
@@ -165,8 +166,9 @@ useEffect(() => {
 //     socket.off("group-message-received", handleIncomingMessage);
 //   };
 // }, [socket, selectedUser, selectedGroup, dispatch]);
+console.log(selectedUser)
 
-
+console.log(chatMessages)
 
 useEffect(() => {
   if (!socket) return;

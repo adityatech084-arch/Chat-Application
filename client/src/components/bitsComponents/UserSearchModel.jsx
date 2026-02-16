@@ -2,7 +2,7 @@ import React from "react";
 import { BsChatDots } from "react-icons/bs";
 import SearchInputUser from "./SearchInputUser";
 import { useSelector, useDispatch } from "react-redux";
-import { setChat } from "../../features/chat/chatSlice";
+import { setChat, setSelectedUser } from "../../features/chat/chatSlice";
 
 export default function UserSearchModal({ onClose }) {
   const dispatch = useDispatch();
@@ -16,8 +16,9 @@ export default function UserSearchModal({ onClose }) {
     );
 
     if (exists) {
-
-      dispatch(setChat(exists));
+      console.log("exists",exists.user)
+dispatch(setSelectedUser(exists.user));
+// dispatch(setChat(exists));
     } else {
           const newChat = {
       _id: user._id, // temporary, could also generate a UUID
