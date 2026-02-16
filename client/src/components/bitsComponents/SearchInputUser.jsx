@@ -9,7 +9,7 @@ function SearchInputUser() {
       const dispatch = useDispatch();
   const { searchResults, loadingSearch, chats ,selectedUser} = useSelector((state) => state.chat);
   const [searchQuery, setSearchQuery] = useState("");
-console.log(selectedUser)
+// console.log(selectedUser)
 
 
  const debouncedSearch = useDebounce((query) => {

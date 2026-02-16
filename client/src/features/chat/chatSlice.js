@@ -435,9 +435,9 @@ export const fetchMessages = createAsyncThunk(
   "chat/fetchMessages",
   async ({ userId, signal }, { rejectWithValue }) => {
     try {
-      console.log(userId)
+      // console.log(userId)
       const res = await axiosInstance.get(`/message/${userId.toString()}`);
-      console.log(res.data)
+      // console.log(res.data)
      return { userId, messages: res.data };
 
     } catch (err) {

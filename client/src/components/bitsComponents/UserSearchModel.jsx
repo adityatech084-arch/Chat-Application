@@ -16,7 +16,7 @@ export default function UserSearchModal({ onClose }) {
     );
 
     if (exists) {
-      console.log("exists",exists.user)
+      // console.log("exists",exists.user)
 dispatch(setSelectedUser(exists.user));
 // dispatch(setChat(exists));
     } else {

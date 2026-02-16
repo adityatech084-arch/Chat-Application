@@ -42,7 +42,7 @@ useEffect(() => {
 
   // If a user is selected (1:1 chat)
   if (selectedUser?._id) {
-    console.log("iam chage iam running",selectedUser)
+    // console.log("iam chage iam running",selectedUser)
     dispatch(fetchMessages({ userId: selectedUser._id })).then(() => {
       // ✅ Reset unread count locally
       dispatch(resetUnreadCountLocal(selectedUser._id));
@@ -166,9 +166,7 @@ useEffect(() => {
 //     socket.off("group-message-received", handleIncomingMessage);
 //   };
 // }, [socket, selectedUser, selectedGroup, dispatch]);
-console.log(selectedUser)
 
-console.log(chatMessages)
 
 useEffect(() => {
   if (!socket) return;
