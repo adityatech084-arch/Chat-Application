@@ -459,7 +459,10 @@ const isOnline = useOnlineStatus();
       }
     } else {
       // Offline: only save locally
-      if (isGroup) dispatch(addGroupMessage({ groupId: chatId, message: newMessage }));
+      if (isGroup){
+
+       dispatch(addGroupMessage({ groupId: chatId, message: newMessage }));
+      }
       else dispatch(addMessage({ receiverId: chatId, message: newMessage }));
 
       saveOfflineMessage(newMessage);

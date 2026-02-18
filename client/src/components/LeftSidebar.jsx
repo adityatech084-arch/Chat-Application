@@ -410,7 +410,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addMessageInfo, fetchMessages, setSelectedUser, resetUnreadCountLocal, setMessages, setChatmsgLoading } from '../features/chat/chatSlice.js';
 import { getSocket } from '../utils/socket.js';
 import { toggleSearchUserModel, toggleCreateGroupModel, toggleSidebar } from '../features/toggle/toggleSlice.js';
-import { addGroup, getGroupMessages, getgroups, resetGroupUnread, setSelectedGroup, updateGroupLastMessage } from '../features/group/groupSlice';
+import { addGroup, addGroupMessage, getGroupMessages, getgroups, resetGroupUnread, setSelectedGroup, updateGroupLastMessage } from '../features/group/groupSlice';
 // import { notfication } from '../utils/notification.js';
 import { formatChatTime } from '../utils/formateChatTime.js';
 import SearchInput from './SearchInput.jsx';
@@ -450,6 +450,7 @@ const LeftSidebar = ({ authUser, setSidebarOpen }) => {
     if (!socket) return;
 
     const handleNewGroup = (group) => {
+      console.log("New group received via socket:", group);
       dispatch(addGroup(group));
       dispatch(setSelectedGroup(group));
     };
@@ -474,13 +475,22 @@ const LeftSidebar = ({ authUser, setSidebarOpen }) => {
     const handleUnreadReset = ({ senderId }) => {
       dispatch(resetUnreadCountLocal(senderId));
     };
+    const handleIncomingMessage = (msg) => {
+      // const selectedUserId = selectedUser?._id;
+      // const msgSenderId = msg.sender?._id || msg.sender;
+      const msgGroupId = msg.group || msg.groupId;
+
+     dispatch(addGroupMessage({ groupId: msgGroupId, message: msg }));
+    }
 
     socket.on("newMessage", handleNewMessage);
     socket.on("unread-reset", handleUnreadReset);
+  socket.on("group-message-received", handleIncomingMessage);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
       socket.off("unread-reset", handleUnreadReset);
+      socket.off("group-message-received", handleIncomingMessage);
     };
   }, [socket, authUser?._id, dispatch]);
 
@@ -682,7 +692,12 @@ const handleUserClick = async (user) => {
                           {group.lastMessageAt && <span className="text-xs text-green-400 ml-2 whitespace-nowrap">{formatChatTime(group.lastMessageAt)}</span>}
                         </div>
                         <div className="flex justify-between items-center mt-0.5">
-                          <p className="text-xs text-black dark:text-white truncate">{group.lastMessage?.text || group.lastMessage || "Start chatting"}</p>
+                          {/* <p className="text-xs text-black dark:text-white truncate">{group.lastMessage?.text || group.lastMessage || "Start chatting"}</p> */}
+                          <p className="text-xs text-black dark:text-white truncate">
+  {/* {group.lastMessage?.text ?? (typeof group.lastMessage === "string" ? group.lastMessage : "Start chatting")} */}
+  {group.lastMessage  || "start chatting in group"}
+</p>
+
                           {group.unreadCount > 0 && (
                             <span className="ml-2 bg-green-500 text-white dark:text-black rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center text-xs font-semibold">
                               {group.unreadCount}

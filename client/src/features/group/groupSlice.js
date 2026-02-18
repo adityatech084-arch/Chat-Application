@@ -150,21 +150,66 @@ const groupSlice = createSlice({
 ,
 
     /* add new message to groupmessages */
-    addGroupMessage(state, action) {
-      const msg = action.payload.message;
+    // addGroupMessage(state, action) {
+    //   const msg = action.payload.message;
 
-      // Ensure createdAt is string to avoid non-serializable error
-      if (msg.createdAt && !(typeof msg.createdAt === "string")) {
-        msg.createdAt = new Date(msg.createdAt).toISOString();
-      }
+    //   // Ensure createdAt is string to avoid non-serializable error
+    //   if (msg.createdAt && !(typeof msg.createdAt === "string")) {
+    //     msg.createdAt = new Date(msg.createdAt).toISOString();
+    //   }
 
-      // push to groupmessages array
-      state.groupmessages.push({
-        ...msg,
-        group: action.payload.groupId,
-      });
-    },
-      updateGroupLastMessage: (state, action) => {
+    //   // push to groupmessages array
+    //   state.groupmessages.push({
+    //     ...msg,
+    //     group: action.payload.groupId,
+    //   });
+    // },
+      
+    
+    addGroupMessage: (state, action) => {
+  const { message: msg, currentUserId, selectedGroupId } = action.payload;
+  const groupId = msg.groupId || msg.group;
+
+  // Prevent duplicates in groupmessages
+  const exists = state.groupmessages.find(
+    (m) => m._id === msg._id || m._id === msg.localId
+  );
+  if (!exists && selectedGroupId === groupId) {
+    state.groupmessages.push(msg);
+  }
+
+  // Find the group
+  const groupIndex = state.groups.findIndex((g) => g._id === groupId || g.id === groupId);
+  const group = state.groups[groupIndex];
+
+  if (group) {
+    // Update last message & timestamp
+    group.lastMessage = msg.text || "Media";
+    group.lastMessageAt = msg.createdAt || new Date();
+
+    // Increment unread only if group not currently selected and sender is not current user
+    if (groupId !== selectedGroupId && msg.sender?._id !== currentUserId) {
+      group.unreadCount = (group.unreadCount || 0) + 1;
+    }
+
+    // Move group to top
+    if (groupIndex > -1) {
+      const [moved] = state.groups.splice(groupIndex, 1);
+      state.groups.unshift(moved);
+    }
+  } else {
+    // If group not in state.groups yet, add it
+    state.groups.unshift({
+      _id: groupId,
+      name: msg.groupName || "Unknown Group",
+      lastMessage: msg.text || "Media",
+      lastMessageAt: msg.createdAt || new Date(),
+      unreadCount: (groupId !== selectedGroupId && msg.sender?._id !== currentUserId) ? 1 : 0,
+    });
+  }
+},
+
+    updateGroupLastMessage: (state, action) => {
     const { groupId, lastMessage, lastMessageAt, incrementUnread } = action.payload;
     const group = state.groups.find(g => g._id === groupId || g.groupId === groupId);
     if (group) {

@@ -172,6 +172,7 @@ useEffect(() => {
   if (!socket) return;
 
   const handleIncomingMessage = (msg) => {
+    console.log("Received message via socket:", msg);
     const selectedUserId = selectedUser?._id;
     const msgSenderId = msg.sender?._id || msg.sender;
     const msgGroupId = msg.group || msg.groupId;
