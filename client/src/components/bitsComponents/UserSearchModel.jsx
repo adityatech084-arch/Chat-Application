@@ -2,41 +2,70 @@ import React from "react";
 import { BsChatDots } from "react-icons/bs";
 import SearchInputUser from "./SearchInputUser";
 import { useSelector, useDispatch } from "react-redux";
-import { setChat, setSelectedUser } from "../../features/chat/chatSlice";
+import { setChat, setChatmsgLoading, setSelectedUser } from "../../features/chat/chatSlice";
 
 export default function UserSearchModal({ onClose }) {
   const dispatch = useDispatch();
   const { searchResults = [], loadingSearch, chats } = useSelector((state) => state.chat);
 
   // Function to handle selecting a user
-  const handleSelectUser = (user) => {
-    // Check if chat already exists
-    const exists = chats.find(
-      (c) => c._id === user._id || c.user?._id === user._id
-    );
+//   const handleSelectUser = (user) => {
+//     // Check if chat already exists
+//     const exists = chats.find(
+//       (c) => c._id === user._id || c.user?._id === user._id
+//     );
 
-    if (exists) {
-      // console.log("exists",exists.user)
-dispatch(setSelectedUser(exists.user));
-// dispatch(setChat(exists));
-    } else {
-          const newChat = {
-      _id: user._id, // temporary, could also generate a UUID
-      lastMessage: "", // no message yet
+//     if (exists) {
+//       // console.log("exists",exists.user)
+// dispatch(setSelectedUser(exists.user));
+// // dispatch(setChat(exists));
+//     } else {
+//           const newChat = {
+//       _id: user._id, // temporary, could also generate a UUID
+//       lastMessage: "", // no message yet
+//       lastMessageAt: null,
+//       messages: [],
+//       unreadCount: 0,
+//       user: { ...user },
+//     };
+//       dispatch(setChat(newChat));
+//     }
+// //   setSidebarOpen(false);
+//     onClose();
+//     // Close dropdown and clear search
+//     // setSearchQuery("");
+//     // setShowDropdown(false);
+//   };
+
+const handleSelectUser = (user) => {
+  const exists = chats.find(
+    (c) => c._id === user._id || c.user?._id === user._id
+  );
+
+  if (exists) {
+    dispatch(setSelectedUser(exists.user));
+
+    // Only fetch if messages exist
+    if (exists.messages?.length > 0) {
+      dispatch(fetchMessages({ userId: user._id }));
+    }
+  } else {
+    const newChat = {
+      _id: user._id,
+      lastMessage: "",
       lastMessageAt: null,
       messages: [],
       unreadCount: 0,
       user: { ...user },
     };
-      dispatch(setChat(newChat));
-    }
-//   setSidebarOpen(false);
-    onClose();
-    // Close dropdown and clear search
-    // setSearchQuery("");
-    // setShowDropdown(false);
-  };
+    dispatch(setChat(newChat)); // set chat & selectedUser
 
+    // stop loading immediately for first-time chat
+    dispatch(setChatmsgLoading(false));
+  }
+
+  onClose();
+};
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">

@@ -311,10 +311,15 @@ useEffect(() => {
           >
         <div className="space-y-4">
           {
-            loading || chatMessages.length ===0 ? (
+            loading ?  (
               <>
               <MessagesSkeleton count={5}/>
               </>
+            ) : chatMessages.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 mt-10">
+                {/* <div className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" /> */}
+                <p className="text-gray-500 text-sm">No messages yet. Start the conversation!</p>
+              </div>
             ) : (
  chatMessages?.map((msg, idx) => {
             const isSender = msg.sender?._id === authUser._id || msg.sender === authUser._id;
