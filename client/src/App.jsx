@@ -57,6 +57,7 @@ import PreLoader from "./components/PreLoader";
 import useOnlineStatus from "./hook/useOnlineStatus";
 import { saveOfflineMessage, sendOfflineMessages } from "./utils/offlineMessages";
 import { getSocket } from "./utils/socket";
+import DesktopOnly from "./components/bitsComponents/DestockOnly";
 function App() {
   const {isCheckingAuth ,authUser} = useSelector(state=>state.auth);
   const dispatch = useDispatch();
@@ -98,7 +99,7 @@ if(isCheckingAuth){
         draggable
         theme="light"
       />
-
+<DesktopOnly>
       <Routes>
         {/* Public routes */}
         <Route element={<PublicProtector />}>
@@ -112,6 +113,7 @@ if(isCheckingAuth){
           <Route path="/" element={<ChatPage />} />
         </Route>
       </Routes>
+      </DesktopOnly>
     </>
   );
 }
