@@ -417,6 +417,7 @@ import SearchInput from './SearchInput.jsx';
 import ChatItemSkeleton from './bitsComponents/ChatSkeleton.jsx';
 import { logout } from '../features/auth/authSlice.js';
 import { BiLogOut } from "react-icons/bi";
+import { Search } from 'lucide-react';
 
 const LeftSidebar = ({ authUser, setSidebarOpen }) => {
   const dispatch = useDispatch();
@@ -602,8 +603,8 @@ const handleUserClick = async (user) => {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 rounded-r-full -ml-4"></div>
         </div>
 
-        <div className="size-10 md:size-12 rounded bg-white border border-slate-200 flex items-center justify-center cursor-pointer transition-all hover:rounded-xl">
-          <div className="size-8 md:size-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">A</div>
+        <div  onClick={() => dispatch(toggleSearchUserModel())}  className=" active:scale-[0.98] size-10 md:size-12 rounded bg-white border border-slate-200 flex items-center justify-center cursor-pointer transition-all hover:rounded-xl">
+          <div className="size-8 md:size-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold"><Search size={24}/></div>
         </div>
 
         <button className="size-10 md:size-12 rounded-lg border flex items-center justify-center text-gray-400 hover:text-indigo-600 transition-all"
@@ -633,7 +634,10 @@ const handleUserClick = async (user) => {
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 space-y-7 h-[calc(100vh-120px)]">
-          <SearchInput />
+          {/* <SearchInput /> */}
+          {/* <div className=''>
+            <Search size={24}/>
+          </div> */}
 
           {/* Direct Messages */}
           <div>

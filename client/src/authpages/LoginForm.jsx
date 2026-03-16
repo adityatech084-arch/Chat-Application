@@ -99,7 +99,7 @@ const LoginForm = ({ onForgotPassword }) => {
      `}>
        {isLoggingIn && <Loder size={20} />}
    
-           <span>Create an Account</span>
+           <span>Login an Account</span>
            <LuShieldCheck size={20} className="group-hover:rotate-12 transition-transform" />
          </button>
     </form>
