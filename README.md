@@ -7,6 +7,13 @@ The main goal of this project was to build a **scalable and modern messaging pla
 ZapChat provides a **smooth chat experience with a responsive interface and secure backend architecture.**
 
 ---
+### 🏠 *Auth-page*
+![Homepage](./screenshots/auth.png)
+
+### 🏠 *Homepage*
+![Homepage](./screenshots/homepage.png)
+![](./screenshots/chatscreen.png)
+
 
 # 🛠 Technologies Used
 
