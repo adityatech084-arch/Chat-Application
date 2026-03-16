@@ -172,7 +172,7 @@ useEffect(() => {
   if (!socket) return;
 
   const handleIncomingMessage = (msg) => {
-    console.log("Received message via socket:", msg);
+    // console.log("Received message via socket:", msg);
     const selectedUserId = selectedUser?._id;
     const msgSenderId = msg.sender?._id || msg.sender;
     const msgGroupId = msg.group || msg.groupId;
@@ -188,7 +188,7 @@ useEffect(() => {
       }
     } else {
       // 1:1 chat
-      console.log(msg)
+      // console.log(msg)
       const isCurrentChatOpen = selectedUserId === msgSenderId;
       dispatch(addMessage(msg)); // always add message
 

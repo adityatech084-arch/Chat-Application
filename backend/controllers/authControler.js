@@ -13,7 +13,7 @@ export const login = async(req, res) => {
     if(!user){
       return res.status(400).json({
         sucess:false,
-        message: "Invalid credentials"});
+        message: "No user Find Invalid credentials"});
     }   
     const isMatch = await bcrypt.compare(password, user.password);
     if(!isMatch){
@@ -46,7 +46,7 @@ export const register = async(req, res) => {
 
    let existuser =await User.findOne({email});
    if(existuser){
-    return res.json({
+    return res.status(401).json({
       sucess:false,
       message: "User already exists"});
     };

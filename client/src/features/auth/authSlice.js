@@ -39,7 +39,9 @@ export const signup = createAsyncThunk(
   async (userData, { rejectWithValue, dispatch }) => {
     try {
       const res = await axiosInstance.post("/auth/user/register", userData);
-      console.log(res)
+      // console.log(res)
+      // toast.success(res.data.message)
+
       
       const user = res.data.user;
       connectSocket(user._id);
@@ -49,6 +51,9 @@ export const signup = createAsyncThunk(
 
       return user;
     } catch (error) {
+      // console.log(error.response.data.message)
+      toast.error(error.response.data.message)
+
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -71,6 +76,8 @@ export const login = createAsyncThunk(
 
       return user;
     } catch (error) {
+      toast.error(error.response.data.message)
+
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -85,9 +92,12 @@ export const logout = createAsyncThunk(
 
       // Disconnect socket
     //   disconnectSocket();
+      toast.success(res.data.message)
+
 
       return res.data; // message only
     } catch (error) {
+
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -131,7 +141,7 @@ const initialState = {
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
-  isCheckingAuth: true,
+  isCheckingAuth: false,
     blockedUsers: [],      // users I blocked
   blockedByUsers: [],   
   error: null,
