@@ -88,7 +88,7 @@ export const logout = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post("/auth/logout");
+      const res = await axiosInstance.post("/auth/user/logout");
 
       // Disconnect socket
     //   disconnectSocket();

@@ -415,6 +415,8 @@ import { addGroup, addGroupMessage, getGroupMessages, getgroups, resetGroupUnrea
 import { formatChatTime } from '../utils/formateChatTime.js';
 import SearchInput from './SearchInput.jsx';
 import ChatItemSkeleton from './bitsComponents/ChatSkeleton.jsx';
+import { logout } from '../features/auth/authSlice.js';
+import { BiLogOut } from "react-icons/bi";
 
 const LeftSidebar = ({ authUser, setSidebarOpen }) => {
   const dispatch = useDispatch();
@@ -612,6 +614,9 @@ const handleUserClick = async (user) => {
         <div className="md:mt-auto size-10 md:size-12 rounded-full border-2 border-white overflow-hidden shadow-sm">
           <img alt="User" className="w-full h-full object-cover" src={authUser?.profilePic} />
         </div>
+        <button onClick={()=>dispatch(logout())} className='bg-gray-100 p-2' >
+          <BiLogOut size={23} color='red'/>
+        </button>
       </nav>
 
       {/* Secondary Drawer */}
