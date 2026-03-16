@@ -12,7 +12,7 @@ ZapChat provides a **smooth chat experience with a responsive interface and secu
 
 ### 🏠 *Homepage*
 ![Homepage](./screenshots/homepage.png)
-![](./screenshots/chatscreen.png)
+![chatscreen](./screenshots/chatscreen.png)
 
 
 # 🛠 Technologies Used
